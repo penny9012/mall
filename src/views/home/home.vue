@@ -9,7 +9,6 @@
       :probe-type="3"
       @scroll="contentScroll"
       :pull-up-load="true"
-      @PullingUp="MoreLoad"
     >
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
@@ -168,6 +167,10 @@ export default {
     this.getHomeGoods("pop");
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
+    // 4.监听图片的加载
+    this.$bus.$on("itemImageLoad", () => {
+      this.$refs.scroll.refresh();
+    });
   },
   mounted() {},
   computed: {
@@ -196,9 +199,6 @@ export default {
     contentScroll(position) {
       this.isShowBackTop = -position.y > 1000;
     },
-    MoreLoad() {
-      this.getHomeGoods(this.currentType);
-    },
 
     // 网络请求的相关方法
     getHomeMultidata() {
@@ -215,8 +215,6 @@ export default {
         // console.log(res);
         this.goods[type].list.push(...res.data.list);
         this.goods[type].page += 1;
-
-        this.$refs.scroll.finishPullUp();
       });
     }
   }
